@@ -1,0 +1,85 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyMPPYm0QQJupxfDjkp2pY5q",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Ishwarya-L/Forward-chaining/blob/main/Forward%20chaining\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "c6zkODm7MoAE",
+        "outputId": "4b960a03-ec3d-4b00-9740-70fef302fe30"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Goal 'wet_grass' proved: True\n",
+            "All inferred facts: {'cloudy', 'timer_set', 'wet_grass', 'rained'}\n"
+          ]
+        }
+      ],
+      "source": [
+        "# Rules are in the form: (conditions, conclusion)\n",
+        "rules = [\n",
+        "    ({\"cloudy\"}, \"rained\"),\n",
+        "    ({\"rained\"}, \"wet_grass\"),\n",
+        "    ({\"sprinkler_on\"}, \"wet_grass\"),\n",
+        "    ({\"timer_set\"}, \"sprinkler_on\")\n",
+        "]\n",
+        "\n",
+        "# Initial known facts\n",
+        "facts = {\"cloudy\", \"timer_set\"}\n",
+        "def forward_chain(rules, facts, goal=None):\n",
+        "    inferred = set()\n",
+        "    while True:\n",
+        "        new_inference = False\n",
+        "        for conditions, conclusion in rules:\n",
+        "            if conditions.issubset(facts) and conclusion not in facts:\n",
+        "                facts.add(conclusion)\n",
+        "                inferred.add(conclusion)\n",
+        "                new_inference = True\n",
+        "                if goal and conclusion == goal:\n",
+        "                    return True, facts\n",
+        "        if not new_inference:\n",
+        "            break\n",
+        "    if goal:\n",
+        "        return goal in facts, facts\n",
+        "    return inferred, facts\n",
+        "\n",
+        "\n",
+        "goal = \"wet_grass\"\n",
+        "success, final_facts = forward_chain(rules, facts.copy(), goal)\n",
+        "print(f\"Goal '{goal}' proved:\", success)\n",
+        "print(\"All inferred facts:\", final_facts)\n"
+      ]
+    }
+  ]
+}
